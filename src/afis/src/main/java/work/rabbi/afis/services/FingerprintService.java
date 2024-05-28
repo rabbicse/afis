@@ -177,6 +177,7 @@ public class FingerprintService {
     }
 
     public static Fmd generateFmdFromBytes(byte[] raw, int width, int height) throws UareUException {
+//        return engine.CreateFmd(raw, width, height, 500, 0, 0, Fmd.Format.ANSI_378_2004);
         return engine.CreateFmd(raw, width, height, 500, 0, 0, Fmd.Format.ANSI_378_2004);
     }
 
