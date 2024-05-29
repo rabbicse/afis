@@ -1,0 +1,11 @@
+services:
+  afis-node-01:
+    build: .
+    ports:
+      - 9091:8089
+      - 9011:8000
+  afis-node-02:
+    build: .
+    ports:
+      - 9092:8089
+      - 9012:8000

@@ -9,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import work.rabbi.afis.dtos.FingerprintVerifyRequest;
 import work.rabbi.afis.dtos.FingerprintVerifyResponse;
 import work.rabbi.afis.services.BackgroundJobService;
+import work.rabbi.afis.services.FingerprintIdentificationService;
 import work.rabbi.afis.services.FingerprintService;
 
 import java.io.IOException;
@@ -22,6 +24,9 @@ public class AfisRestController {
     private JobScheduler jobScheduler;
     @Autowired
     private BackgroundJobService backgroundJobService;
+
+    @Autowired
+    private FingerprintIdentificationService fingerprintIdentificationService;
 
     @GetMapping("/sample")
     public String getSample() {
@@ -35,5 +40,16 @@ public class AfisRestController {
         jobScheduler.enqueue(() -> backgroundJobService.executeSampleJob("Test", fingerprint.getBytes()));
 
         return "AFIS request for id: " + id + " request accepted!";
+    }
+
+    @PostMapping(value = "/identify")
+    public @ResponseBody String identifyFingerprint(
+            @RequestBody FingerprintVerifyRequest fingerprintVerifyRequest) {
+//        jobScheduler.enqueue(() -> backgroundJobService.executeFpIdentificationJob(fingerprintVerifyRequest.getMember()));
+
+//        return "AFIS request for member id: " + fingerprintVerifyRequest.getMember().memberId + " request accepted!";
+
+        fingerprintIdentificationService.identifyFingerprints(fingerprintVerifyRequest.getMember());
+        return "OK";
     }
 }

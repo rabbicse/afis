@@ -6,6 +6,7 @@ import org.jobrunr.jobs.annotations.Job;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import work.rabbi.afis.dtos.Member;
 
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -19,10 +20,10 @@ public class BackgroundJobService {
 
     private AtomicInteger count = new AtomicInteger();
 
-    @Job(name = "The sample job with variable %0", retries = 2)
+    @Job(name = "The sample job with variable %0", retries = 3)
     public void executeSampleJob(String id, byte[] fingerBmp) {
 
-        logger.info("The sample job has begun. The variable you passed is {}", id);
+        logger.info("Starting fingerprint identification system! ID: {}", id);
         try {
 //            Thread.sleep(EXECUTION_TIME);
             Fmd inputFmd = FingerprintService.generateFmdFromBytes(fingerBmp);
@@ -41,6 +42,12 @@ public class BackgroundJobService {
             count.incrementAndGet();
             logger.info("Sample job has finished...");
         }
+    }
+
+
+    @Job(name = "The sample job with variable %0", retries = 3)
+    public void executeFpIdentificationJob(Member member) {
+
     }
 
     public int getNumberOfInvocations() {

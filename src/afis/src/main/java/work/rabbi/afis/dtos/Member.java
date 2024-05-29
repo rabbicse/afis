@@ -5,11 +5,16 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Getter
-@Setter
+import java.util.UUID;
+
 @NoArgsConstructor
 @AllArgsConstructor
-public class FingerprintVerifyRequest {
-    private Member member;
-    private Integer mode;
+@Getter
+@Setter
+public class Member {
+    public Long branchId;
+    public Long memberId;
+    public Boolean isRecapture;
+    public UUID requestId;
+
 }
