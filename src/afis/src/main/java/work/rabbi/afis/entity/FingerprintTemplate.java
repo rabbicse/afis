@@ -7,6 +7,20 @@ import lombok.Setter;
 @Table(name = "P_MemberFingerTemplate")
 @Getter
 @Setter
+@SqlResultSetMapping(
+        name = "FingerprintTemplateMapping",
+        entities = @EntityResult(
+                entityClass = FingerprintTemplate.class,
+                fields = {
+                        @FieldResult(name = "id", column = "Id"),
+                        @FieldResult(name = "memberId", column = "P_MemberId"),
+                        @FieldResult(name = "template", column = "Template"),
+                        @FieldResult(name = "finger", column = "Finger"),
+                        @FieldResult(name = "featureSet", column = "FeatureSet"),
+                        @FieldResult(name = "status", column = "Status")
+                }
+        )
+)
 public class FingerprintTemplate {
 
     @Id
@@ -32,8 +46,8 @@ public class FingerprintTemplate {
 //    @Column(name = "IsVerified")
 //    private Boolean isVerified;
 
-    @Column(name = "VerificationStatus")
-    private Integer verificationStatus;
+//    @Column(name = "VerificationStatus")
+//    private Integer verificationStatus;
 
 //    @Column(name = "AuthorizeStatus")
 //    private String authorizeStatus;
