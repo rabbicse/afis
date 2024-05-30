@@ -11,6 +11,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Base64;
+import java.util.List;
 
 public class FingerprintService {
     private static Engine engine = UareUGlobal.GetEngine();
@@ -200,6 +201,28 @@ public class FingerprintService {
         double score = ((double) Engine.PROBABILITY_ONE - (double) falseMatchRate) / (double) Engine.PROBABILITY_ONE;
         System.out.println(score);
         return score;
+    }
+
+    private static Fmd convertToRegFmd(byte[] raw) {
+
+        try {
+            return UareUGlobal.GetImporter().ImportFmd(raw, Fmd.Format.DP_REG_FEATURES, Fmd.Format.DP_REG_FEATURES);
+        } catch (UareUException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static boolean identifyFmdBytes(byte[] fmdData, List<byte[]> fmdDataList) throws UareUException {
+        // input fmd as featureset
+        Fmd inputFmd = UareUGlobal.GetImporter().ImportFmd(fmdData, Fmd.Format.DP_VER_FEATURES, Fmd.Format.DP_VER_FEATURES);
+
+
+        // template list to fmd list
+        Fmd[] fmds = fmdDataList
+                .stream().map(raw -> convertToRegFmd(raw))
+                .toArray(Fmd[]::new);
+
+        return identifyFmd(inputFmd, fmds);
     }
 
     public static boolean identifyFmd(Fmd fmd1, Fmd[] fmds) throws UareUException {
