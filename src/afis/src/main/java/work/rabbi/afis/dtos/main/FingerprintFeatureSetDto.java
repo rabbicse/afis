@@ -1,4 +1,4 @@
-package work.rabbi.afis.dtos;
+package work.rabbi.afis.dtos.main;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

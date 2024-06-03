@@ -1,6 +1,8 @@
 package work.rabbi.afis.services;
 
 import com.digitalpersona.uareu.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -14,6 +16,7 @@ import java.util.Base64;
 import java.util.List;
 
 public class FingerprintService {
+    private static Logger logger = LoggerFactory.getLogger(FingerprintService.class);
     private static Engine engine = UareUGlobal.GetEngine();
     private static Compression compressor = UareUGlobal.GetCompression();
 
@@ -219,7 +222,7 @@ public class FingerprintService {
 
         // template list to fmd list
         Fmd[] fmds = fmdDataList
-                .stream().map(raw -> convertToRegFmd(raw))
+                .stream().map(FingerprintService::convertToRegFmd)
                 .toArray(Fmd[]::new);
 
         return identifyFmd(inputFmd, fmds);
@@ -235,15 +238,17 @@ public class FingerprintService {
         if (0 != vCandidates.length) {
             //optional: to get false match rate compare with the top candidate
             int falseMatchRate = engine.Compare(fmd1, 0, fmds[vCandidates[0].fmd_index], vCandidates[0].view_index);
-            // todo: message
-            return true;
+            StringBuilder builder = new StringBuilder();
 //            String str = String.format("Fingerprint identified, %s\n", m_vFingerNames[vCandidates[0].fmd_index]);
-//            m_text.append(str);
-//            str = String.format("dissimilarity score: 0x%x.\n", falsematch_rate);
-//            m_text.append(str);
-//            str = String.format("false match rate: %e.\n\n\n", (double) (falsematch_rate / Engine.PROBABILITY_ONE));
-//            m_text.append(str);
+//            builder.append(str);
+            String str = String.format("dissimilarity score: 0x%x.\n", falseMatchRate);
+            builder.append(str);
+            str = String.format("false match rate: %e.\n\n\n", (double) (falseMatchRate / Engine.PROBABILITY_ONE));
+            builder.append(str);
+            logger.warn("Match found! Details: " + builder.toString());
+            return true;
         } else {
+            logger.info("No match found!");
             return false; // no match found
         }
     }

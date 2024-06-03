@@ -5,6 +5,7 @@ import com.digitalpersona.uareu.UareUException;
 import org.jobrunr.jobs.annotations.Job;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import work.rabbi.afis.dtos.Member;
 
@@ -19,6 +20,9 @@ public class BackgroundJobService {
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     private AtomicInteger count = new AtomicInteger();
+
+    @Autowired
+    private FingerprintIdentificationService fingerprintIdentificationService;
 
     @Job(name = "The sample job with variable %0", retries = 3)
     public void executeSampleJob(String id, byte[] fingerBmp) {
@@ -45,9 +49,11 @@ public class BackgroundJobService {
     }
 
 
-    @Job(name = "The sample job with variable %0", retries = 3)
+    @Job(name = "Fingerprint Identification Job with %0", retries = 3)
     public void executeFpIdentificationJob(Member member) {
-
+        logger.info("Starting fingerprint identification task...");
+        boolean status = fingerprintIdentificationService.identifyFingerprints(member);
+        logger.info("Identification status: " + status);
     }
 
     public int getNumberOfInvocations() {

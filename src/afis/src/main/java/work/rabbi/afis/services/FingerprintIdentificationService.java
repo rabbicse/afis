@@ -1,21 +1,21 @@
 package work.rabbi.afis.services;
 
-import com.digitalpersona.uareu.Fmd;
 import com.digitalpersona.uareu.UareUException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import work.rabbi.afis.dtos.FingerprintFeatureSetDto;
+import work.rabbi.afis.dtos.main.FingerprintFeatureSetDto;
 import work.rabbi.afis.dtos.Member;
+import work.rabbi.afis.dtos.node.FingerprintTemplateDto;
 import work.rabbi.afis.repositories.main.MainFingerprintRepository;
+import work.rabbi.afis.repositories.node.NodeFingerprintRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
-import java.util.stream.Collectors;
 
 @Service
 public class FingerprintIdentificationService {
@@ -23,6 +23,9 @@ public class FingerprintIdentificationService {
 
     @Autowired
     private MainFingerprintRepository fingerprintMetaRepository;
+
+    @Autowired
+    private NodeFingerprintRepository nodeFingerprintRepository;
 
     public boolean identifyFingerprints(Member member) {
         logger.info("Starting fingerprint identification system! ID: {}", member.memberId);
@@ -35,10 +38,14 @@ public class FingerprintIdentificationService {
             logger.info("Total members: " + featureSets.size());
 
             // todo: get fingerprint templates from branch from local database
-            List<byte[]> templates = new ArrayList<>();
+            List<Object[]> templateResults = nodeFingerprintRepository.findFingerprintsByBranch(8L); // todo:
+            List<FingerprintTemplateDto> templateDtos = templateResults.stream().map(this::mapToFingerprintTemplateDto).toList();
+
+            List<byte[]> templates = templateDtos.stream().map(FingerprintTemplateDto::getTemplate).toList();
+
+            logger.info("Total members under branch " + member.getBranchId() + " : " + templates.size());
 
             // todo: match fingerprint with all templates
-//            Fmd inputFmd = FingerprintService.generateFmdFromBytes(fingerBmp);
             // Define the number of parallel threads
             int parallelism = 4;
             ForkJoinPool customThreadPool = new ForkJoinPool(parallelism);
@@ -80,6 +87,15 @@ public class FingerprintIdentificationService {
                 ((Number) result[0]).longValue(),
                 ((Number) result[1]).intValue(),
                 (byte[]) result[2]
+        );
+    }
+
+    private FingerprintTemplateDto mapToFingerprintTemplateDto(Object[] result) {
+        return new FingerprintTemplateDto(
+                ((Number) result[0]).longValue(),
+                ((Number) result[1]).longValue(),
+                ((Number) result[2]).intValue(),
+                (byte[]) result[3]
         );
     }
 }

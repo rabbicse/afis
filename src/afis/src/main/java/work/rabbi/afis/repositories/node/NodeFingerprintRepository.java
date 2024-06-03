@@ -8,9 +8,9 @@ import work.rabbi.afis.entity.node.FingerprintCache;
 import java.util.List;
 
 public interface NodeFingerprintRepository extends JpaRepository<FingerprintCache, Long> {
-    @Query(value = "SELECT P_MemberId, FingerIndex, Template " +
-            "FROM FingerprintCache " +
-            "WHERE [BranchId] = :branchId",
-            nativeQuery = true, name = "FingerprintTemplateMapping")
+    @Query(value = "SELECT branchid, p_memberid, fingerindex, template " +
+            "FROM public.fingerprintcache " +
+            "WHERE branchid = :branchId",
+            nativeQuery = true)
     List<Object[]> findFingerprintsByBranch(@Param("branchId") Long branchId);
 }

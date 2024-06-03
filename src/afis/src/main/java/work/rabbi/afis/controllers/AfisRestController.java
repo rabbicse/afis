@@ -45,11 +45,11 @@ public class AfisRestController {
     @PostMapping(value = "/identify")
     public @ResponseBody String identifyFingerprint(
             @RequestBody FingerprintVerifyRequest fingerprintVerifyRequest) {
-//        jobScheduler.enqueue(() -> backgroundJobService.executeFpIdentificationJob(fingerprintVerifyRequest.getMember()));
+        jobScheduler.enqueue(() -> backgroundJobService.executeFpIdentificationJob(fingerprintVerifyRequest.getMember()));
 
-//        return "AFIS request for member id: " + fingerprintVerifyRequest.getMember().memberId + " request accepted!";
+        return "AFIS request for member id: " + fingerprintVerifyRequest.getMember().memberId + " request accepted!";
 
-        fingerprintIdentificationService.identifyFingerprints(fingerprintVerifyRequest.getMember());
-        return "OK";
+//        fingerprintIdentificationService.identifyFingerprints(fingerprintVerifyRequest.getMember());
+//        return "OK";
     }
 }
